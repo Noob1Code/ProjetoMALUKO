@@ -8,8 +8,6 @@ import banco.bancoDados;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
@@ -27,7 +25,7 @@ public class TelaCadastroMunicipior extends javax.swing.JFrame {
     private List<Municipio> listaMunicipios = null;
     private Ultilidades ultilidades = null;
     private Ibanco bd = null;
-    private TelaTabela tela = new TelaTabela();
+    //private TelaTabela tela = new TelaTabela();
         
     public TelaCadastroMunicipior() {
         initComponents();

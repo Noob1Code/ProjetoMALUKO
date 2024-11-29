@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import modelos.classes.DadosRanker;
 import modelos.classes.Municipio;
@@ -276,7 +277,7 @@ public class bancoDados implements Ibanco {
 
     @Override
     public List<String[]> Buscar(String valorBusca) throws Exception {
-         List<String[]> list = new ArrayList<>();
+         List<String[]> list = new LinkedList<>();
         String query = "SELECT * FROM ibge.tabela_ibge WHERE Municipios LIKE ?;";
 
         try (
