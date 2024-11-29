@@ -20,6 +20,8 @@ public enum ClassificacaoIDH {
     ClassificacaoIDH(String descricao) {
         this.descricao = descricao;
     }
+    
+    
 
     // Getter
     public String getDescricao() {
