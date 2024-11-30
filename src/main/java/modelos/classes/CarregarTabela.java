@@ -78,7 +78,7 @@ public class CarregarTabela {
                 rs.getString("IDH"),
                 formatarCasa(rs.getString("Renda_Media")),
                 formatarCasa(rs.getString("Renda_Nominal")),
-                formatarCasa(rs.getString("Pea_Dia")),
+                rs.getString("Pea_Dia"),
                 rs.getString("IDH_Educacao"),
                 rs.getString("IDH_Longevidade")
             );
