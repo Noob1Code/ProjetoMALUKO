@@ -4,29 +4,22 @@
  */
 package visao;
 
-import banco.TabelaHandler;
-import banco.bancoDados;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.classes.Calculo;
-import modelos.classes.CarregarTabela;
 import modelos.classes.Municipio;
+import modelos.classes.TabelaController;
 import modelos.classes.Ultilidades;
-import modelos.interfaces.Ibanco;
 
 /**
  *
  * @author aluno
  */
 public class TelaTabela extends javax.swing.JFrame {
+    private TabelaController tabelaController;
     private List<Municipio> listaDeMuni = null;
-    private Ibanco bd = null;
     private Ultilidades ultilidades = null;
-    private Calculo calculos = null;
-    private CarregarTabela teste = null;
+   
 
     /**
      * Creates new form Tabela
@@ -34,47 +27,27 @@ public class TelaTabela extends javax.swing.JFrame {
     public TelaTabela() {
         initComponents();
         this.setLocationRelativeTo(null);
-        init();
+        inicializarComponentesCustomizados();
+        tabelaController = new TabelaController();
     }
 
-    public void init() {
-        ultilidades = new Ultilidades();
-        calculos = new Calculo();
-        
-        ultilidades.escParaFechar(this);
-
-        ultilidades.usuarioLogado(jLabel_NomeUsuario);
-
-        ultilidades.padraoButaoMenu(jButton_Enviar);
-        ultilidades.padraoButaoMenu(jButton_Dashboard);
-        ultilidades.padraoButaoMenu(jButton_Deletar);
-        ultilidades.padraoButaoMenu(jButton_Inserir);
-        ultilidades.padraoButaoMenu(jButton_Ler);
-        ultilidades.padraoButaoMenu(jButton_Sair);
-        ultilidades.padraoButaoMenu(jButton_Buscar);
-        ultilidades.padraoScroll(jScrollPane_Tabela);
-        
-        ultilidades.padraoTextFild(jTextField_Buscar);
-    }
-
-    public void inicializarTabela() throws Exception {
-        if (listaDeMuni == null) {
-            listaDeMuni = new LinkedList<>();
-        }
-
-        // Inicializa conexão com o banco de dados
-        bd = new bancoDados();
-
-        // Obtém o modelo da tabela
-        DefaultTableModel model = (DefaultTableModel) jTable_Tabela.getModel();
-
-        // Configura o handler da tabela
-        TabelaHandler tabelaHandler = new TabelaHandler(listaDeMuni, calculos, bd);
-
-        // Sincroniza dados da tabela com a lista e o banco
-        tabelaHandler.configurarTabela(model);
-        // Fecha a conexão com o banco de dados
-        bd.fecharConexao();
+    private void inicializarComponentesCustomizados() {
+       ultilidades = new Ultilidades();
+       ultilidades.usuarioLogado(jLabel_NomeUsuario); // Exibe o usuário logado
+       configurarEstiloComponentes(); // Aplica o estilo visual aos componentes
+   }
+    
+    private void configurarEstiloComponentes() {
+    ultilidades.padraoButaoMenu(jButton_Enviar);
+    ultilidades.padraoButaoMenu(jButton_Dashboard);
+    ultilidades.padraoButaoMenu(jButton_Deletar);
+    ultilidades.padraoButaoMenu(jButton_Inserir);
+    ultilidades.padraoButaoMenu(jButton_Ler);
+    ultilidades.padraoButaoMenu(jButton_Sair);
+    ultilidades.padraoButaoMenu(jButton_Buscar);
+    ultilidades.padraoScroll(jScrollPane_Tabela);
+    ultilidades.padraoTextFild(jTextField_Buscar);
+    ultilidades.escParaFechar(this);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -278,103 +251,18 @@ public class TelaTabela extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_LerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_LerActionPerformed
-            try {
-               if (listaDeMuni == null) {
-                   listaDeMuni = new ArrayList<>();
-               }
-
-               // Instancia o banco de dados
-               bd = new bancoDados();
-
-               // Obtém o modelo da tabela
-               DefaultTableModel model = (DefaultTableModel) jTable_Tabela.getModel();
-
-               // Instancia o carregador da tabela
-               teste = new CarregarTabela(bd, listaDeMuni, "./src/main/java/dados/CSV Normalizado.csv");
-
-               // Carrega os dados no modelo
-               teste.carregarDados(model);
-
-               // Atualiza a lista de municípios
-               listaDeMuni = teste.getListaDeMuni();
-
-               // Valida os dados carregados
-               if (listaDeMuni == null || listaDeMuni.isEmpty()) {
-                   JOptionPane.showMessageDialog(this, "Nenhum dado carregado.");
-               }
-               
-               inicializarTabela();
-               // Fecha a conexão com o banco
-               bd.fecharConexao();
-           } catch (Exception erro) {
-               // Mostra mensagem de erro
-               JOptionPane.showMessageDialog(null, "Erro ao gerar tabela: " + erro.getMessage());
-           }
+            DefaultTableModel modeloTabela = (DefaultTableModel) jTable_Tabela.getModel();
+            tabelaController.carregarTabela(modeloTabela);
     }//GEN-LAST:event_jButton_LerActionPerformed
 
     private void jButton_EnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EnviarActionPerformed
-        try {
-                if (teste == null) {
-                    JOptionPane.showMessageDialog(this, "Nenhuma tabela foi carregada. Use o botão 'Ler' antes de enviar.");
-                    return;
-                }
-
-                // Inicializa conexão com o banco
-                bd = new bancoDados();
-                bd.getConexao();
-
-                // Atualiza lista com os dados mais recentes da tabela
-                listaDeMuni = teste.getListaDeMuni();
-
-                // Envia os dados ao banco
-                if (listaDeMuni != null && !listaDeMuni.isEmpty()) {
-                    bd.inserirMunicipiosNoBanco(listaDeMuni);
-                    JOptionPane.showMessageDialog(this, "Dados enviados com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Nenhum dado para enviar.");
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao enviar dados: " + ex.getMessage());
-            }
+         tabelaController.enviarDadosParaBanco();
     }//GEN-LAST:event_jButton_EnviarActionPerformed
 
     private void jButton_DeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeletarActionPerformed
-        int selectedRow = jTable_Tabela.getSelectedRow();
-
-        // Verifica se alguma linha foi selecionada
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione uma linha para deletar.");
-            return;
-        }
-
-        // Confirmação do usuário
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Tem certeza de que deseja deletar o registro selecionado?",
-                "Confirmação", JOptionPane.YES_NO_OPTION);
-
-        if (confirm != JOptionPane.YES_OPTION) {
-            return; // Se o usuário não confirmar, interrompe o processo
-        }
-
-        // Obtém o CodigoIBGE da linha selecionada (assumindo que está na primeira coluna)
-        String codigoIBGE = jTable_Tabela.getValueAt(selectedRow, 0).toString();
-
-        try {
-            // Cria a instância do banco e chama o método de exclusão
-            bd = new bancoDados();
-            bd.getConexao();
-            bd.deletar(codigoIBGE);
-            bd.fecharConexao();
-
-            // Remove a linha da tabela
-            DefaultTableModel model = (DefaultTableModel) jTable_Tabela.getModel();
-            model.removeRow(selectedRow);
-
-            JOptionPane.showMessageDialog(this, "Registro deletado com sucesso!");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao deletar o registro: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+        DefaultTableModel modeloTabela = (DefaultTableModel) jTable_Tabela.getModel();
+        int linhaSelecionada = jTable_Tabela.getSelectedRow();
+        tabelaController.deletarRegistro(modeloTabela, linhaSelecionada);
     }//GEN-LAST:event_jButton_DeletarActionPerformed
 
     private void jButton_InserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InserirActionPerformed
@@ -391,42 +279,10 @@ public class TelaTabela extends javax.swing.JFrame {
 
     private void jButton_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_BuscarActionPerformed
         DefaultTableModel modeloTabela = (DefaultTableModel) jTable_Tabela.getModel();
-        modeloTabela.setRowCount(0); // Limpa a tabela antes de adicionar os dados
-
-        try {
-            bd = new bancoDados();
-            String textoBusca = jTextField_Buscar.getText().trim(); // Obtém o texto e remove espaços em branco nas extremidades
-            List<String[]> dados;
-
-            if (bd.verificarSeExisteDadosNoBanco()) {
-                if (isInteger(textoBusca)) {
-                    // Se for um número inteiro, busca pelo código do IBGE
-                    dados = bd.Buscar(Integer.parseInt(textoBusca));
-                } else {
-                    // Caso contrário, busca pelo nome
-                    dados = bd.Buscar(textoBusca);
-                }
-
-                // Adiciona os dados retornados na tabela
-                for (String[] linha : dados) {
-                    modeloTabela.addRow(linha);
-                }
-            }
-            inicializarTabela();
-            bd.fecharConexao();
-        } catch (Exception erro) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar dados na tabela: " + erro.getMessage());
-        }
+        String textoBusca = jTextField_Buscar.getText().trim();
+        tabelaController.buscarNaTabela(modeloTabela, textoBusca);
     }//GEN-LAST:event_jButton_BuscarActionPerformed
-    
-    private boolean isInteger(String texto) {
-    try {
-        Integer.parseInt(texto);
-        return true;
-    } catch (NumberFormatException e) {
-        return false;
-    }
-    }
+
     /**
      * @param args the command line arguments
      */

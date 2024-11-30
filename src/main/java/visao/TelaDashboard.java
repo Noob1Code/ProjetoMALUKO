@@ -7,12 +7,11 @@ package visao;
 
 import banco.bancoDados;
 import java.awt.event.KeyEvent;
-//import java.awt.event.KeyListener;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelos.classes.TabelaController;
 import modelos.classes.Ultilidades;
 import modelos.interfaces.Ibanco;
 
@@ -23,14 +22,17 @@ import modelos.interfaces.Ibanco;
 public class TelaDashboard extends javax.swing.JFrame {
     private Ibanco bd = null;
     private Ultilidades ultilidades = null;
+    private TabelaController Controlador = null;
     
     public TelaDashboard() {
         initComponents();
-        init();
+        init(); 
     }
     
 
     public void init(){
+            DefaultTableModel modeloTabela = (DefaultTableModel) jTable_Tabela.getModel();
+            modeloTabela.setRowCount(0);
             ultilidades = new Ultilidades();
             ultilidades.usuarioLogado(jLabel_NomeUsuario);
             
@@ -40,8 +42,8 @@ public class TelaDashboard extends javax.swing.JFrame {
             ultilidades.padraoScroll(jScrollPane_Tabela);
             
             ultilidades.escParaFechar(this);
-             
-            carregardados();
+            Controlador = new TabelaController();
+            Controlador.carregardadosDashBord(modeloTabela);
             
         try { 
             bd = new bancoDados();
@@ -62,37 +64,6 @@ public class TelaDashboard extends javax.swing.JFrame {
             Logger.getLogger(TelaDashboard.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-     
-    public void carregardados(){
-        DefaultTableModel modeloTabela = (DefaultTableModel) jTable_Tabela.getModel();
-        modeloTabela.setRowCount(0); // Limpa a tabela antes de adicionar os dados
-
-        try {
-            bd = new bancoDados();
-
-            if (bd.verificarSeExisteDadosNoBanco()) {
-                List<String[]> dados = bd.ordenarPibCT(); // Chama o método que retorna os dados em formato de lista de arrays
-
-                for (String[] linha : dados) {
-                    // Adiciona cada linha retornada do banco como uma nova linha na tabela
-                    modeloTabela.addRow(linha);
-                }
-            }
-
-            bd.fecharConexao();
-        } catch (Exception erro) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar dados na tabela: " + erro.getMessage());
-        }
-    }
-    
-    private boolean isInteger(String texto) {
-    try {
-        Integer.parseInt(texto);
-        return true;
-    } catch (NumberFormatException e) {
-        return false;
-    }
-    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -102,8 +73,6 @@ public class TelaDashboard extends javax.swing.JFrame {
         jButton_Tabela = new javax.swing.JButton();
         jLabel_NomeUsuario = new javax.swing.JLabel();
         jButton_Sair = new javax.swing.JButton();
-        jTextField_Buscar = new javax.swing.JTextField();
-        jButton_Buscar = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         painelGrafico1 = new visao.PainelGrafico();
@@ -154,13 +123,6 @@ public class TelaDashboard extends javax.swing.JFrame {
             }
         });
 
-        jButton_Buscar.setText("Buscar");
-        jButton_Buscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_BuscarActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -168,10 +130,6 @@ public class TelaDashboard extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton_Tabela)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Buscar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField_Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel_NomeUsuario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -182,14 +140,10 @@ public class TelaDashboard extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField_Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton_Buscar))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton_Tabela)
-                        .addComponent(jLabel_NomeUsuario)
-                        .addComponent(jButton_Sair)))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton_Tabela)
+                    .addComponent(jLabel_NomeUsuario)
+                    .addComponent(jButton_Sair))
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
@@ -478,10 +432,6 @@ public class TelaDashboard extends javax.swing.JFrame {
             this.dispose();
         }
     }//GEN-LAST:event_formKeyPressed
-
-    private void jButton_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_BuscarActionPerformed
-        
-    }//GEN-LAST:event_jButton_BuscarActionPerformed
     
     /**
      * @param args the command line arguments
@@ -498,7 +448,6 @@ public class TelaDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton_Buscar;
     private javax.swing.JButton jButton_Sair;
     private javax.swing.JButton jButton_Tabela;
     private javax.swing.JLabel jLabel2;
@@ -515,7 +464,6 @@ public class TelaDashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane_Tabela;
     private javax.swing.JTable jTable_Tabela;
-    private javax.swing.JTextField jTextField_Buscar;
     private visao.PainelGrafico painelGrafico1;
     private visao.PainelGrafico painelGrafico2;
     private visao.PainelGrafico painelGrafico3;

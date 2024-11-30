@@ -38,9 +38,9 @@ public class TelaCadastroMunicipior extends javax.swing.JFrame {
     
     public void init(){
         ultilidades = new Ultilidades();
-        ultilidades.usuarioLogado(jLabel_NomeUsuario);
-        
         ultilidades.escParaFechar(this);
+        
+        ultilidades.usuarioLogado(jLabel_NomeUsuario);
         
         ultilidades.padraoTextFild(jTextField_IDH);
         setTextFieldDoubleBetweenZeroAndOne(jTextField_IDH);
@@ -613,7 +613,7 @@ public class TelaCadastroMunicipior extends javax.swing.JFrame {
         );
 
         // Criar lista para armazenamento
-        listaMunicipios.add(novoMunicipio);
+        //listaMunicipios.add(novoMunicipio);
         
         
         // Inserir no banco

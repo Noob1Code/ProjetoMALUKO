@@ -28,11 +28,10 @@ public interface Ibanco {
     public ResultSet visualizar() throws Exception;
     public void adicionarNoBanco(Municipio muni) throws Exception;
     public void inserirUsuario(List<Usuario> listaUsuario) throws Exception;
-    public String substituirVirgulaPorPonto(String valor);
     public List<DadosRanker> ordenar(String coluna) throws Exception;
-    public List<String[]> ordenarPibCT() throws Exception;
-    public List<String[]> Buscar(Integer valorBusca) throws Exception;
-    public List<String[]> Buscar(String valorBusca) throws Exception; 
+    public List<Municipio> ordenarPibCT() throws Exception;
+    public List<Municipio> Buscar(Integer valorBusca) throws Exception;
+    public List<Municipio> Buscar(String valorBusca) throws Exception; 
     public List<String> pesquisaIDH(String coluna);
     public boolean verificarCredenciais(String login, String senha) throws Exception;
     public String nomeUsuario(String CPF) throws Exception;

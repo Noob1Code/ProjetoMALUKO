@@ -16,13 +16,13 @@ public class Calculo implements ICalculo{
     @Override
     public String DensidadeDemografica(String Populacao, String AreaKm2) {
         double densidade = Double.parseDouble(Populacao)/Double.parseDouble(AreaKm2);
-        return String.format("%.2f", densidade);
+        return String.format("%.2f", densidade).replace(",", ".");
     }
 
     @Override
     public String PibPerCapitaTotal(String PibTotal, String Populacao) {
         double PibPCT = Double.parseDouble(PibTotal)/Double.parseDouble(Populacao);
-        return String.format("%.2f", PibPCT);
+        return String.format("%.2f", PibPCT).replace(",", ".");
     }
 
     @Override

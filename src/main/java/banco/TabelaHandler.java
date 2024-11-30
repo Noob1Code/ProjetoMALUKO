@@ -20,7 +20,7 @@ import modelos.interfaces.Ibanco;
  * @brief Class TabelaHandler
  */
 public class TabelaHandler {
-
+    
     private List<Municipio> listaDeMuni = null;
     private Calculo calculo = null;
     private Ibanco bd= null;
@@ -40,12 +40,7 @@ public class TabelaHandler {
         model.addTableModelListener(this::processarAlteracaoTabela);
     }
 
-    private void processarAlteracaoTabela(TableModelEvent e) {
-            if (listaDeMuni == null) {
-                Logger.getLogger(TabelaHandler.class.getName()).log(Level.SEVERE, "listaDeMuni está nula.");
-                return;
-            }
-            
+    private void processarAlteracaoTabela(TableModelEvent e) {  
         int row = e.getFirstRow();
         int column = e.getColumn();
 
@@ -56,7 +51,7 @@ public class TabelaHandler {
         }
 
         String novoValor = model.getValueAt(row, column).toString();
-        novoValor = novoValor.replace(".", "").replace(",", ".");
+        novoValor = novoValor.replace(",", ".");
 
         String codigoIBGE = model.getValueAt(row, 0).toString();
 

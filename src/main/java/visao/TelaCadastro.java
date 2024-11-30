@@ -33,6 +33,7 @@ public class TelaCadastro extends javax.swing.JFrame {
 
     public void init() {
         ultilidades = new Ultilidades();
+        ultilidades.escParaFechar(this);
         ultilidades.padraoTextFild(jTextField_Nome);
         ultilidades.padraoTextFild(jTextField_CPF);
         setTextFieldMaxLength(jTextField_CPF, 11);
@@ -54,7 +55,7 @@ public class TelaCadastro extends javax.swing.JFrame {
         jButton2.setBackground(new Color(7, 164, 121));
         jButton2.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        ultilidades.escParaFechar(this);
+        
     }
 
     @SuppressWarnings("unchecked")

@@ -16,6 +16,7 @@ import modelos.enums.RegiaoGeografica;
 public class Municipio {
 
     private Calculo calculo = new Calculo();
+    private String posicao = null;
     private String codigoIBGE = null;
     private String municipios = null;
     private String microrregiao = null;
@@ -37,12 +38,37 @@ public class Municipio {
     private String idhClass = null;
     private String idhEducacaoClass = null;
     private String idhLongevidadeClass = null;
+    private String Data = null;
+    private String hora = null;
 
     public Municipio(String codigoIBGE, String municipios, String microrregiao,
             Estado estado, RegiaoGeografica regiaoGeografica, String areaKm2, String populacao,
             String domicilios, String pibTotal, String idh, String rendaMedia,
             String rendaNominal, String peaDia, String idhEducacao, String idhLongevidade) {
 
+        this.codigoIBGE = codigoIBGE;
+        this.municipios = municipios;
+        this.microrregiao = microrregiao;
+        this.estado = estado;
+        this.regiaoGeografica = regiaoGeografica.getDescricao();
+        this.areaKm2 = areaKm2;
+        this.populacao = populacao;
+        this.domicilios = domicilios;
+        this.pibTotal = pibTotal;
+        this.idh = idh;
+        this.rendaMedia = rendaMedia;
+        this.rendaNominal = rendaNominal;
+        this.peaDia = peaDia;
+        this.idhEducacao = idhEducacao;
+        this.idhLongevidade = idhLongevidade;
+    }
+    
+    public Municipio(String posicao, String codigoIBGE, String municipios, String microrregiao,
+            Estado estado, RegiaoGeografica regiaoGeografica, String areaKm2, String populacao,
+            String domicilios, String pibTotal, String idh, String rendaMedia,
+            String rendaNominal, String peaDia, String idhEducacao, String idhLongevidade) {
+
+        this.posicao = posicao;
         this.codigoIBGE = codigoIBGE;
         this.municipios = municipios;
         this.microrregiao = microrregiao;
@@ -202,6 +228,55 @@ public class Municipio {
     public void setIdhLongevidade(String idhLongevidade) {
         this.idhLongevidade = idhLongevidade;
     }
+
+    public String getData() {
+        return Data;
+    }
+
+    public void setData(String Data) {
+        this.Data = Data;
+    }
+
+    public String getHora() {
+        return hora;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
+
+    public String getPosicao() {
+        return posicao;
+    }
+
+    public void setPosicao(String posicao) {
+        this.posicao = posicao;
+    }
     
-    
+    public String[] criarLinhaTabela() {
+        return new String[]{
+            getCodigoIBGE(),
+            getMunicipios(),
+            getMicrorregiao(),
+            String.valueOf(getEstado()),
+            String.valueOf(getRegiaoGeografica()),
+            getAreaKm2(),
+            getPopulacao(),
+            getDomicilios(),
+            getPibTotal(),
+            getIdh(),
+            getRendaMedia(),
+            getRendaNominal(),
+            getPeaDia(),
+            getIdhEducacao(),
+            getIdhLongevidade(),
+            getDensidadeDemografica(),
+            getPibCT(),
+            getIdhClass(),
+            getIdhEducacaoClass(),
+            getIdhLongevidadeClass(),
+            getData(),
+            getHora()
+        };
+    }
 }

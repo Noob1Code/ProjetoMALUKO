@@ -15,6 +15,8 @@ import java.util.List;
 import modelos.classes.DadosRanker;
 import modelos.classes.Municipio;
 import modelos.classes.Usuario;
+import modelos.enums.Estado;
+import modelos.enums.RegiaoGeografica;
 import modelos.interfaces.Ibanco;
 
 /**
@@ -30,6 +32,9 @@ public class bancoDados implements Ibanco {
     private String usuarioP = "root";
     private String senhaP = "Kayque";
     private Connection conectar = null;
+    private Municipio municipio = null;
+    private Estado estado = null;
+    private RegiaoGeografica regiao = null;
 
     public bancoDados() throws Exception {
         try {
@@ -94,18 +99,18 @@ public class bancoDados implements Ibanco {
                 stmt.setString(5, muni.getRegiaoGeografica().toString());
                 stmt.setDouble(6, Double.parseDouble(muni.getAreaKm2()));
                 stmt.setInt(7, Integer.parseInt(muni.getPopulacao()));
-                stmt.setDouble(8, Double.parseDouble(substituirVirgulaPorPonto(muni.getDensidadeDemografica())));
-                stmt.setDouble(9, Double.parseDouble(substituirVirgulaPorPonto(muni.getDomicilios())));
-                stmt.setDouble(10, Double.parseDouble(substituirVirgulaPorPonto(muni.getPibTotal())));
-                stmt.setDouble(11, Double.parseDouble(substituirVirgulaPorPonto(muni.getPibCT())));
-                stmt.setDouble(12, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdh())));
+                stmt.setDouble(8, Double.parseDouble(muni.getDensidadeDemografica()));
+                stmt.setDouble(9, Double.parseDouble(muni.getDomicilios()));
+                stmt.setDouble(10, Double.parseDouble(muni.getPibTotal()));
+                stmt.setDouble(11, Double.parseDouble(muni.getPibCT()));
+                stmt.setDouble(12, Double.parseDouble(muni.getIdh()));
                 stmt.setString(13, muni.getIdhClass());
-                stmt.setDouble(14, Double.parseDouble(substituirVirgulaPorPonto(muni.getRendaMedia())));
-                stmt.setDouble(15, Double.parseDouble(substituirVirgulaPorPonto(muni.getRendaNominal())));
+                stmt.setDouble(14, Double.parseDouble(muni.getRendaMedia()));
+                stmt.setDouble(15, Double.parseDouble(muni.getRendaNominal()));
                 stmt.setInt(16, Integer.parseInt(muni.getPeaDia()));
-                stmt.setDouble(17, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdhEducacao())));
+                stmt.setDouble(17, Double.parseDouble(muni.getIdhEducacao()));
                 stmt.setString(18, muni.getIdhEducacaoClass());
-                stmt.setDouble(19, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdhLongevidade())));
+                stmt.setDouble(19, Double.parseDouble(muni.getIdhLongevidade()));
                 stmt.setString(20, muni.getIdhLongevidadeClass());
                 stmt.addBatch();
             }
@@ -211,18 +216,18 @@ public class bancoDados implements Ibanco {
                 inserirStmt.setString(5, muni.getRegiaoGeografica().toString());
                 inserirStmt.setDouble(6, Double.parseDouble(muni.getAreaKm2()));
                 inserirStmt.setInt(7, Integer.parseInt(muni.getPopulacao()));
-                inserirStmt.setDouble(8, Double.parseDouble(substituirVirgulaPorPonto(muni.getDensidadeDemografica())));
-                inserirStmt.setDouble(9, Double.parseDouble(substituirVirgulaPorPonto(muni.getDomicilios())));
-                inserirStmt.setDouble(10, Double.parseDouble(substituirVirgulaPorPonto(muni.getPibTotal())));
-                inserirStmt.setDouble(11, Double.parseDouble(substituirVirgulaPorPonto(muni.getPibCT())));
-                inserirStmt.setDouble(12, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdh())));
+                inserirStmt.setDouble(8, Double.parseDouble(muni.getDensidadeDemografica()));
+                inserirStmt.setDouble(9, Double.parseDouble(muni.getDomicilios()));
+                inserirStmt.setDouble(10, Double.parseDouble(muni.getPibTotal()));
+                inserirStmt.setDouble(11, Double.parseDouble(muni.getPibCT()));
+                inserirStmt.setDouble(12, Double.parseDouble(muni.getIdh()));
                 inserirStmt.setString(13, muni.getIdhClass());
-                inserirStmt.setDouble(14, Double.parseDouble(substituirVirgulaPorPonto(muni.getRendaMedia())));
-                inserirStmt.setDouble(15, Double.parseDouble(substituirVirgulaPorPonto(muni.getRendaNominal())));
+                inserirStmt.setDouble(14, Double.parseDouble(muni.getRendaMedia()));
+                inserirStmt.setDouble(15, Double.parseDouble(muni.getRendaNominal()));
                 inserirStmt.setInt(16, Integer.parseInt(muni.getPeaDia()));
-                inserirStmt.setDouble(17, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdhEducacao())));
+                inserirStmt.setDouble(17, Double.parseDouble(muni.getIdhEducacao()));
                 inserirStmt.setString(18, muni.getIdhEducacaoClass());
-                inserirStmt.setDouble(19, Double.parseDouble(substituirVirgulaPorPonto(muni.getIdhLongevidade())));
+                inserirStmt.setDouble(19, Double.parseDouble(muni.getIdhLongevidade()));
                 inserirStmt.setString(20, muni.getIdhLongevidadeClass());
 
                 inserirStmt.addBatch();
@@ -235,18 +240,10 @@ public class bancoDados implements Ibanco {
             throw nfe;
         }
     }
-    
-    @Override
-    public String substituirVirgulaPorPonto(String valor) {
-        if (valor == null) {
-            return null;
-        }
-        return valor.replace(",", ".");
-    }
 
     @Override
     public List<DadosRanker>ordenar(String coluna) throws Exception {
-            List<DadosRanker> list = new ArrayList<>();
+            List<DadosRanker> list = new LinkedList<>();
             String query = "SELECT \n" +
                        "    ROW_NUMBER() OVER (ORDER BY "+coluna+" DESC) AS Ordem,\n" +
                        "    CodigoIBGE,\n" +
@@ -276,55 +273,53 @@ public class bancoDados implements Ibanco {
     } 
 
     @Override
-    public List<String[]> Buscar(String valorBusca) throws Exception {
-         List<String[]> list = new LinkedList<>();
+    public List<Municipio> Buscar(String valorBusca) throws Exception {
+        List<Municipio> list = new LinkedList<>();
         String query = "SELECT * FROM ibge.tabela_ibge WHERE Municipios LIKE ?;";
 
         try (
             PreparedStatement stmt = conectar.prepareStatement(query)
         ) {
-            // Define o parâmetro com os caracteres curinga (%)
-            stmt.setString(1, "%" + valorBusca + "%");
+            // Define o parâmetro do código do IBGE
+            stmt.setString(1,"%" +valorBusca+"%");
 
             try (ResultSet resultados = stmt.executeQuery()) {
                 while (resultados.next()) {
-                    String[] linha = {
-                        resultados.getString("CodigoIBGE"),
-                        resultados.getString("Municipios"),
-                        resultados.getString("Microrregiao"),
-                        resultados.getString("Estado"),
-                        resultados.getString("Regiao_Geografica"),
-                        resultados.getString("AreaKm2"),
-                        resultados.getString("Populacao"),
-                        resultados.getString("Domicilios"),
-                        resultados.getString("Pib_Total"),
-                        resultados.getString("IDH"),
-                        resultados.getString("Renda_Media"),
-                        resultados.getString("Renda_Nominal"),
-                        resultados.getString("Pea_Dia"),
-                        resultados.getString("IDH_Educacao"),
-                        resultados.getString("IDH_Longevidade"),
-                        resultados.getString("Densidade_Demografica"),
-                        resultados.getString("Pib_CT"),
-                        resultados.getString("IDH_Class"),
-                        resultados.getString("IDH_Educacao_Class"),
-                        resultados.getString("IDH_Longevidade_Class"),
-                        resultados.getString("DataT"),
-                        resultados.getString("Hora")
-                    };
-                    list.add(linha);
+                   estado = Estado.valueOf(resultados.getString("Estado").toUpperCase());
+                   regiao = RegiaoGeografica.fromString(resultados.getString("Regiao_Geografica"));
+
+                    municipio = new Municipio(
+                    resultados.getString("CodigoIBGE"),
+                    resultados.getString("Municipios"),
+                    resultados.getString("Microrregiao"),
+                    estado,
+                    regiao,
+                    resultados.getString("AreaKm2"),
+                    resultados.getString("Populacao"),
+                    resultados.getString("Domicilios"),
+                    resultados.getString("Pib_Total"),
+                    resultados.getString("IDH"),
+                    resultados.getString("Renda_Media"),
+                    resultados.getString("Renda_Nominal"),
+                    resultados.getString("Pea_Dia"),
+                    resultados.getString("IDH_Educacao"),
+                    resultados.getString("IDH_Longevidade")
+                    );          
+                    municipio.setData( resultados.getString("DataT"));
+                    municipio.setHora(resultados.getString("Hora")); 
+                    list.add(municipio);
+                    }
                 }
-            }
-        } catch (Exception e) {
+            }catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         return list;
-    }
+        } 
 
     @Override
-    public List<String[]> Buscar(Integer valorBusca) throws Exception {
-        List<String[]> list = new ArrayList<>();
+    public List<Municipio> Buscar(Integer valorBusca) throws Exception {
+        List<Municipio> list = new ArrayList<>();
         String query = "SELECT * FROM ibge.tabela_ibge WHERE CodigoIBGE = ?;";
 
         try (
@@ -335,39 +330,37 @@ public class bancoDados implements Ibanco {
 
             try (ResultSet resultados = stmt.executeQuery()) {
                 while (resultados.next()) {
-                    String[] linha = {
-                        resultados.getString("CodigoIBGE"),
-                        resultados.getString("Municipios"),
-                        resultados.getString("Microrregiao"),
-                        resultados.getString("Estado"),
-                        resultados.getString("Regiao_Geografica"),
-                        resultados.getString("AreaKm2"),
-                        resultados.getString("Populacao"),
-                        resultados.getString("Domicilios"),
-                        resultados.getString("Pib_Total"),
-                        resultados.getString("IDH"),
-                        resultados.getString("Renda_Media"),
-                        resultados.getString("Renda_Nominal"),
-                        resultados.getString("Pea_Dia"),
-                        resultados.getString("IDH_Educacao"),
-                        resultados.getString("IDH_Longevidade"),
-                        resultados.getString("Densidade_Demografica"),
-                        resultados.getString("Pib_CT"),
-                        resultados.getString("IDH_Class"),
-                        resultados.getString("IDH_Educacao_Class"),
-                        resultados.getString("IDH_Longevidade_Class"),
-                        resultados.getString("DataT"),
-                        resultados.getString("Hora")
-                    };
-                    list.add(linha);
+                   estado = Estado.valueOf(resultados.getString("Estado").toUpperCase());
+                   regiao = RegiaoGeografica.fromString(resultados.getString("Regiao_Geografica"));
+
+                    municipio = new Municipio(
+                    resultados.getString("CodigoIBGE"),
+                    resultados.getString("Municipios"),
+                    resultados.getString("Microrregiao"),
+                    estado,
+                    regiao,
+                    resultados.getString("AreaKm2"),
+                    resultados.getString("Populacao"),
+                    resultados.getString("Domicilios"),
+                    resultados.getString("Pib_Total"),
+                    resultados.getString("IDH"),
+                    resultados.getString("Renda_Media"),
+                    resultados.getString("Renda_Nominal"),
+                    resultados.getString("Pea_Dia"),
+                    resultados.getString("IDH_Educacao"),
+                    resultados.getString("IDH_Longevidade")
+                    );          
+                    municipio.setData( resultados.getString("DataT"));
+                    municipio.setHora(resultados.getString("Hora")); 
+                    list.add(municipio);
+                    }
                 }
-            }
-        } catch (Exception e) {
+            }catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         return list;
-    }
+        } 
 
     @Override
     public List<String> pesquisaIDH(String coluna) {
@@ -407,8 +400,8 @@ public class bancoDados implements Ibanco {
     }
 
     @Override
-    public List<String[]> ordenarPibCT() throws Exception {
-        List<String[]> list = new ArrayList<>();
+    public List<Municipio> ordenarPibCT() throws Exception {
+        List<Municipio> list = new ArrayList<>();
         String query = "SELECT \n" +
                        "ROW_NUMBER() OVER (ORDER BY ta.Pib_CT DESC) AS Ordem,\n" +
                        "ta.* \n" +
@@ -419,13 +412,16 @@ public class bancoDados implements Ibanco {
             ResultSet resultados = stmt.executeQuery()
         ) {
             while (resultados.next()) {
-                String[] linha = {
+                estado = Estado.valueOf(resultados.getString("Estado").toUpperCase());
+                regiao = RegiaoGeografica.fromString(resultados.getString("Regiao_Geografica"));
+
+                    municipio = new Municipio(
                     resultados.getString("Ordem"),
                     resultados.getString("CodigoIBGE"),
                     resultados.getString("Municipios"),
                     resultados.getString("Microrregiao"),
-                    resultados.getString("Estado"),
-                    resultados.getString("Regiao_Geografica"),
+                    estado,
+                    regiao,
                     resultados.getString("AreaKm2"),
                     resultados.getString("Populacao"),
                     resultados.getString("Domicilios"),
@@ -435,23 +431,20 @@ public class bancoDados implements Ibanco {
                     resultados.getString("Renda_Nominal"),
                     resultados.getString("Pea_Dia"),
                     resultados.getString("IDH_Educacao"),
-                    resultados.getString("IDH_Longevidade"),
-                    resultados.getString("Densidade_Demografica"),
-                    resultados.getString("Pib_CT"),
-                    resultados.getString("IDH_Class"),
-                    resultados.getString("IDH_Educacao_Class"),
-                    resultados.getString("IDH_Longevidade_Class"),
-                    resultados.getString("DataT"),
-                    resultados.getString("Hora")
+                    resultados.getString("IDH_Longevidade")
+                    );          
+                    municipio.setData( resultados.getString("DataT"));
+                    municipio.setHora( resultados.getString("Hora")); 
+                    municipio.setPosicao(resultados.getString("Ordem")); 
+                    
+                    list.add(municipio);
                 };
-                list.add(linha);
+             } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        return list;
-        }
+            return list;
+            }
 
     @Override
     public String nomeUsuario(String CPF) throws Exception {
